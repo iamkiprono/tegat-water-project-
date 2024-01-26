@@ -22,6 +22,10 @@ const PaymentComponent = ({
   name: string;
   id: number;
 }) => {
+
+  const url = "http://localhost:5000";
+
+
   const [amount, setAmount] = useState("");
   const [transactionId, setTransactionId] = useState("");
   const [paymentType, setPaymentType] = useState("BANK");
@@ -30,7 +34,7 @@ const PaymentComponent = ({
   const addPayment = async () => {
     try {
       // return console.log({amount: parseInt(amount),transactionId,paymentType,id})
-      const res = await fetch("http://localhost:5000/payments", {
+      const res = await fetch(`${url}/payments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,7 +62,7 @@ const PaymentComponent = ({
 
   async function deletePayment(id: number) {
     try {
-      const res = await fetch(`http://localhost:5000/payments/${id}`, {
+      const res = await fetch(`${url}/payments/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -74,6 +78,16 @@ const PaymentComponent = ({
       if (error instanceof Error) alert(error.message);
     }
   }
+
+
+  const formatDate = (date: Date) => {
+    const formatDate = new Date(date);
+    const dateString = formatDate.toLocaleDateString();
+    const time = formatDate.toLocaleTimeString();
+    return `${dateString} at ${time}`;
+  }
+
+
   return (
     <div>
       <Drawer>
@@ -81,7 +95,7 @@ const PaymentComponent = ({
           <div className="bg-[#111827] text-white px-2 rounded">+</div>
         </DrawerTrigger>
         <DrawerContent>
-          <div className="p-4">
+          <div className="p-4 h-[400px] overflow-scroll">
             <p className="font-bold text-xl my-4">{name}</p>
             <div className="overflow-x-auto">
               <table className="min-w-full border-collapse border border-gray-300">
@@ -113,7 +127,7 @@ const PaymentComponent = ({
                           {payment.amount}/=
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
-                          {payment.date}
+                          {formatDate(payment.date)}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
                           {payment.paymentType}

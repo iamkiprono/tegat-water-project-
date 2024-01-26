@@ -12,6 +12,7 @@ export const farmerType = {
   name: "Justine Langat",
   farmerId: 1,
   plotNo: "24",
+  currentId: 0,
   month: "February",
   current: 35,
   prev: 23,
@@ -37,17 +38,42 @@ export const farmerType = {
 const Page = () => {
   const router = useRouter();
 
+  const url = "http://localhost:5000";
+
   const [month, setMonth] = useState("January");
   const [name, setName] = useState("");
 
   const [farmers, setFarmers] = useState<(typeof farmerType)[]>([]);
   const getFarmers = async () => {
     try {
-      const res = await fetch("http://localhost:5000/farmers/bills");
+      // const res = await fetch("https://milimani-api.onrender.com/farmers/bills");
+      const res = await fetch(`${url}/farmers/bills`);
       const data = await res.json();
       setFarmers(data);
     } catch (error) {}
   };
+
+  const updateReading = async (id: number, value: number) => {
+    try {
+      const res = await fetch(`${url}/readings`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, value }),
+      });
+
+      const data = await res.json();
+      getFarmers();
+
+      console.log(data);
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(error.message);
+      }
+    }
+  };
+  ``;
 
   useEffect(() => {
     getFarmers();
@@ -76,6 +102,16 @@ const Page = () => {
               April
             </option>
           </select>
+        </div>
+        <div>
+          <button
+            onClick={() => {
+              getFarmers();
+            }}
+            className="border px-6 py-2 my-4 bg-black text-white hover:bg-white hover:text-black "
+          >
+            Refresh
+          </button>
         </div>
         <div>
           <input
@@ -166,7 +202,17 @@ const Page = () => {
                     </td>
                     <td className="p-3 border border-gray-300">
                       {farmer.current}
-                      <button onClick={()=>alert(farmer.currentId)} className="px-2 border ml-2">+</button>
+                      <button
+                        onClick={() => {
+                          const value = prompt("Enter current reading");
+                          if (value) {
+                            updateReading(farmer.currentId, parseInt(value));
+                          }
+                        }}
+                        className="px-2 border ml-2"
+                      >
+                        +
+                      </button>
                     </td>
                     <td className="p-3 border border-gray-300">
                       {farmer.prev}
@@ -199,8 +245,11 @@ const Page = () => {
                         id={farmer.farmerId}
                         name={farmer.name}
                       /> */}
-                      <PaymentComponent id={farmer.farmerId} name={farmer.name} payments={farmer.payments} />
-             
+                      <PaymentComponent
+                        id={farmer.farmerId}
+                        name={farmer.name}
+                        payments={farmer.payments}
+                      />
                     </td>
 
                     <td className="p-3 border border-gray-300">

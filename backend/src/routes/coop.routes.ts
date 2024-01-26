@@ -1,11 +1,11 @@
 import express from 'express'
-// import { coopController } from '../controllers/coop.controller'
+import { coopController } from '../controllers/coop.controller'
 
 
 const router = express.Router()
 
 
-// router.post("/", coopController)
+router.post("/", coopController)
 
 
 export default router

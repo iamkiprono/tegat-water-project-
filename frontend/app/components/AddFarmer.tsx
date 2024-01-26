@@ -3,13 +3,17 @@
 import React, { useState } from "react";
 
 const AddFarmer = () => {
+
+  const url = "http://localhost:5000";
+
+
   const [name, setName] = useState("");
   const [plotNo, setPlotNo] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async () => {
     try {
-      const res = await fetch("http://localhost:5000/farmers", {
+      const res = await fetch(`${url}/farmers`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
