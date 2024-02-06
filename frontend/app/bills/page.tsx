@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import PaymentComponent from "../components/PaymentComponent";
 
-export const farmerType = {
+const farmerType = {
   
   name: "Justine Langat",
   farmerId: 1,
