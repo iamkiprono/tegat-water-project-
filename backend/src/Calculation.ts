@@ -83,6 +83,7 @@ export const calculate = (
   current: number,
   currentId: number,
   prev: number,
+  year: number,
   standingCharge: number,
   payments: {
     id: number;
@@ -99,7 +100,7 @@ export const calculate = (
 
   const paid = payments.reduce((acc, cur) => acc + cur.amount, 0);
   const monthlyBill = current === 0 ? 0 : standingCharge + extraCharge;
-  const amountDue = monthlyBill - paid;
+  const amountDue = monthlyBill;
 
   return {
     name,
@@ -109,6 +110,7 @@ export const calculate = (
     current,
     currentId,
     prev,
+    year,
     count,
     extraCount,
     extraCharge,
@@ -122,9 +124,12 @@ export const calculate = (
 
 export const calculateBlank = (
   name: string,
+  farmerId: number,
   plotNo: string,
   current: number,
+  currentId: number,
   prev: number,
+  year: number,
   standingCharge: number,
   payments: {
     id: number;
@@ -133,27 +138,34 @@ export const calculateBlank = (
     paymentType: string;
     farmerId: number;
   }[],
-  month: string
+  month: string,
+  balance: number
 ) => {
   const count = current - prev;
   const extraCount = count < 10 ? 0 : count - 10;
   const extraCharge = extraCount * 50;
 
   const paid = payments.reduce((acc, cur) => acc + cur.amount, 0);
-  const monthlyBill = current === 0 ? 0 : standingCharge + extraCharge;
-  const amountDue = monthlyBill - paid;
+  const monthlyBill = balance;
+  // const monthlyBill = standingCharge + extraCharge;
+  // const monthlyBill = current === 0 ? 0 : standingCharge + extraCharge;
+  const amountDue = monthlyBill;
 
   return {
     name,
     plotNo,
+    farmerId,
     month,
-    current: current === 0 ? prev : current,
+    current,
+    currentId,
     prev,
+    year,
     count,
     extraCount,
     extraCharge,
     standingCharge,
-    monthlyBill: 0,
+    // monthlyBill: year === 2023 && month === "May" ? 0 : monthlyBill,
+    monthlyBill,
     payments,
     paid,
     amountDue,

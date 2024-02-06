@@ -18,13 +18,18 @@ const PaymentComponent = ({
   name,
   id,
 }: {
-  payments: any;
+  payments: {
+    id: number;
+    transactionId: string;
+    amount: number;
+    date: Date;
+    paymentType: string;
+    farmerId: number;
+}[];
   name: string;
   id: number;
 }) => {
-
   const url = "http://localhost:5000";
-
 
   const [amount, setAmount] = useState("");
   const [transactionId, setTransactionId] = useState("");
@@ -79,14 +84,12 @@ const PaymentComponent = ({
     }
   }
 
-
   const formatDate = (date: Date) => {
     const formatDate = new Date(date);
-    const dateString = formatDate.toLocaleDateString();
+    const dateString = formatDate.toDateString();
     const time = formatDate.toLocaleTimeString();
     return `${dateString} at ${time}`;
-  }
-
+  };
 
   return (
     <div>
@@ -117,38 +120,42 @@ const PaymentComponent = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {currentPayments.map((payment) => {
+                  {payments.map((payment) => {
                     return (
-                      <tr key={payment.id}>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {payment.transactionId}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 font-bold">
-                          {payment.amount}/=
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {formatDate(payment.date)}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {payment.paymentType}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          <Button
-                            onClick={() => {
-                              if (
-                                confirm(
-                                  "Are you sure you want to delete this record?"
-                                )
-                              ) {
-                                deletePayment(payment.id);
-                              }
-                            }}
-                            variant={"destructive"}
-                          >
-                            Delete record
-                          </Button>
-                        </td>
-                      </tr>
+                      <>
+                        {payment.amount !== 0 && (
+                          <tr key={payment.id}>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {payment.transactionId}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2 font-bold">
+                              {payment.amount}/=
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {formatDate(payment.date)}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {payment.paymentType}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              <Button
+                                onClick={() => {
+                                  if (
+                                    confirm(
+                                      "Are you sure you want to delete this record?"
+                                    )
+                                  ) {
+                                    deletePayment(payment.id);
+                                  }
+                                }}
+                                variant={"destructive"}
+                              >
+                                Delete record
+                              </Button>
+                            </td>
+                          </tr>
+                        )}
+                      </>
                     );
                   })}
                 </tbody>
@@ -204,7 +211,6 @@ const PaymentComponent = ({
                   </tr>
                 </tbody>
               </table>
-        
             </div>
           </div>
         </DrawerContent>

@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,34 +7,43 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
-model Farmer {
-  id       Int       @id @default(autoincrement())
-  name     String
-  plotNo   String     @unique
-  readings Reading[]
-  payments Payment[]
+model farmer {
+  id      Int            @id @default(autoincrement())
+  name    String
+  plotNo  String?        @unique(map: "Farmer_plotNo_key")
+  payment payment[]
+  balance prev_balance[]
+  reading reading[]
 }
 
-model Reading {
-  id         Int      @id @default(autoincrement())
-  month      Int
-  year       Int
-  value      Float
-  farmer     Farmer   @relation(fields: [farmerId], references: [id])
-  farmerId   Int
-  @@unique([farmerId, month, year])
+model payment {
+  id            Int      @id @default(autoincrement())
+  transactionId String   @default("")
+  amount        Float
+  date          DateTime @default(now())
+  paymentType   String
+  farmerId      Int
+  farmer        farmer   @relation(fields: [farmerId], references: [id], map: "Payment_farmerId_fkey")
+
+  @@index([farmerId], map: "Payment_farmerId_fkey")
 }
 
-model Payment {
-  id        Int       @id @default(autoincrement())
-  transactionId String    @default("") 
-  amount    Float
-  date      DateTime  @default(now())
-  paymentType String
-  farmer    Farmer    @relation(fields: [farmerId], references: [id])
-  farmerId  Int
+model reading {
+  id       Int    @id @default(autoincrement())
+  month    Int
+  year     Int
+  value    Float
+  farmerId Int
+  farmer   farmer @relation(fields: [farmerId], references: [id], map: "Reading_farmerId_fkey")
+
+  @@unique([farmerId, month, year], map: "Reading_farmerId_month_year_key")
 }
 
+model prev_balance {
+  id       Int     @id @default(autoincrement())
+  amount   Int?
+  farmerId Int?
+  farmer   farmer? @relation(fields: [farmerId], references: [id])
 
+  @@index([farmerId], map: "prev_balance_farmerId_fkey")
+}

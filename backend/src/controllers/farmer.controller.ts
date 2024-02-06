@@ -12,22 +12,66 @@ export const createFarmer = async (req: Request, res: Response) => {
       },
     });
 
-    const yearReading = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(
+    const yearReading2023 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(
       (read, i) => {
         return {
           farmerId: newFarmer.id,
           month: i + 1,
+          year: 2023,
+          value: 0,
+        };
+      }
+    );
+    const yearReading2024 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(
+      (read, i) => {
+        return {
+          farmerId: newFarmer.id,
           year: 2024,
+          month: i + 1,
           value: 0,
         };
       }
     );
 
     const farmerReading = await prisma.reading.createMany({
-      data: yearReading,
+      data: [...yearReading2023, ...yearReading2024],
     });
 
     res.send({ newFarmer, farmerReading });
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+};
+
+// insert readings
+export const insertReadings = async (req: Request, res: Response) => {
+  const { readings } = req.body;
+  try {
+    const newReadings = await prisma.reading.createMany({
+      data: readings,
+    });
+    res.send(newReadings);
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+};
+
+export const createManyFarmers = async (req: Request, res: Response) => {
+  const { farmers } = req.body;
+
+  const listFarmers = farmers.map((farmer: any) => {
+    return {
+      name: farmer.names_,
+    };
+  });
+
+  try {
+    const newFarmers = await prisma.farmer.createMany({ data: listFarmers });
+    res.send(newFarmers);
   } catch (error) {
     if (error instanceof Error) {
       res.status(400).json({ error: error.message });
@@ -39,13 +83,14 @@ export const getFarmers = async (req: Request, res: Response) => {
   try {
     const farmer = await prisma.farmer.findMany({
       include: {
-        readings: {
+        reading: {
           orderBy: {
             month: "asc",
           },
         },
 
-        payments: true,
+        payment: true,
+        balance: true,
       },
     });
 
@@ -59,156 +104,251 @@ export const getFarmers = async (req: Request, res: Response) => {
 
 export const getFarmersBills = async (req: Request, res: Response) => {
   try {
+    const pageNumber = 15;
+    const itemsPerPage = 10;
+    const totalItems = await prisma.farmer.count();
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    // skip
+    const skip = (pageNumber - 1) * itemsPerPage;
+
+    const take = itemsPerPage;
+
     const farmer = await prisma.farmer.findMany({
+      skip,
+      take,
       include: {
-        readings: {
-          orderBy: {
-            month: "asc",
-          },
+        reading: {
+          orderBy: [
+            {
+              year: "asc",
+            },
+            { month: "asc" },
+          ],
         },
 
-        payments: true,
+        payment: true,
+        balance: true,
+      },
+    });
+
+    const hasNext = pageNumber < totalPages;
+
+    return res.json({
+      items: farmer,
+      pageInfo: {
+        currentPage: pageNumber,
+        totalPages,
+        hasNext,
       },
     });
 
     // months and standing charges
+
+    const nov2023 = 6;
+    const dec2023 = 7;
+
     const currentMonth = 4;
-    const monthToCheck = 1;
+    const Jan = 1;
     const Feb = 2;
     const Mar = 3;
     const Apr = 4;
+
+    const monthsWithCharges2023 = [
+      {
+        month: "May",
+        standingCharge: 500,
+        year: 2023,
+      },
+      {
+        month: "June",
+        standingCharge: 400,
+        year: 2023,
+      },
+      {
+        month: "July",
+        standingCharge: 400,
+        year: 2023,
+      },
+      {
+        month: "August",
+        standingCharge: 500,
+        year: 2023,
+      },
+      {
+        month: "September",
+        standingCharge: 500,
+        year: 2023,
+      },
+      {
+        month: "October",
+        standingCharge: 500,
+        year: 2023,
+      },
+      {
+        month: "November",
+        standingCharge: 500,
+        year: 2023,
+      },
+      {
+        month: "December",
+        standingCharge: 500,
+        year: 2023,
+      },
+    ];
 
     const monthsWithCharges = [
       {
         month: "January",
         standingCharge: 500,
+        year: 2024,
       },
       {
         month: "February",
         standingCharge: 500,
+        year: 2024,
       },
       {
         month: "March",
         standingCharge: 500,
+        year: 2024,
       },
       {
         month: "April",
         standingCharge: 500,
+        year: 2024,
+      },
+      {
+        month: "May",
+        standingCharge: 500,
+        year: 2024,
+      },
+      {
+        month: "June",
+        standingCharge: 500,
+        year: 2024,
+      },
+      {
+        month: "July",
+        standingCharge: 500,
+        year: 2024,
+      },
+      {
+        month: "August",
+        standingCharge: 500,
+        year: 2024,
+      },
+      {
+        month: "September",
+        standingCharge: 500,
+        year: 2024,
+      },
+      {
+        month: "October",
+        standingCharge: 500,
+        year: 2024,
+      },
+      {
+        month: "November",
+        standingCharge: 500,
+        year: 2024,
+      },
+      {
+        month: "December",
+        standingCharge: 500,
+        year: 2024,
       },
     ];
 
-    const billsJan = farmer.map((farmer) => {
-      if (currentMonth < monthToCheck) {
-        return calculateBlank(
-          farmer.name,
-          farmer.plotNo,
-          farmer.readings[Mar - 1].value,
-          Mar - 2 < 0 ? 0 : farmer.readings[Mar - 2].value,
-          monthsWithCharges[Mar - 1].standingCharge,
+    function calculate2023() {
+      let bills = [];
 
-          farmer.payments,
-          monthsWithCharges[Mar - 1].month
+      for (let i = 1; i < 9; i++) {
+        bills.push(
+          ...farmer
+            // .filter((fa) => fa.readings.filter((rea) => rea.year === 2023))
+            .map((farmer) => {
+              if (i < 2) {
+                return calculateBlank(
+                  farmer.name,
+                  farmer.id,
+                  farmer.plotNo ? farmer.plotNo : "",
+
+                  farmer.reading[i + -1].value,
+                  farmer.reading[i + -1].id,
+                  i - 2 < 0 ? 0 : farmer.reading[i + -2].value,
+                  2023,
+                  monthsWithCharges2023[i - 1].standingCharge,
+
+                  farmer.payment,
+                  monthsWithCharges2023[i - 1].month,
+                  farmer?.balance[0]?.amount ? farmer.balance[0].amount : 0
+                );
+              }
+              return calculate(
+                farmer.name,
+                farmer.id,
+                farmer.plotNo ? farmer.plotNo : "",
+
+                farmer.reading[i + -1].value,
+                farmer.reading[i + -1].id,
+                i - 2 < 0 ? 0 : farmer.reading[i + -2].value,
+                2023,
+                monthsWithCharges2023[i - 1].standingCharge,
+
+                farmer.payment,
+                monthsWithCharges2023[i - 1].month
+              );
+            })
         );
       }
-      return calculate(
-        farmer.name,
-        farmer.id,
-        farmer.plotNo,
-        farmer.readings[monthToCheck - 1].value,
-        farmer.readings[monthToCheck - 1].id,
-        monthToCheck - 2 < 0 ? 0 : farmer.readings[monthToCheck - 2].value,
-        monthsWithCharges[monthToCheck - 1].standingCharge,
 
-        farmer.payments,
-        monthsWithCharges[monthToCheck - 1].month
-      );
-    });
+      return bills;
+    }
 
-    const billsFeb = farmer.map((farmer) => {
-      if (currentMonth < Feb) {
-        return calculateBlank(
-          farmer.name,
-          farmer.plotNo,
-          farmer.readings[Mar - 1].value,
-          Mar - 2 < 0 ? 0 : farmer.readings[Mar - 2].value,
-          monthsWithCharges[Mar - 1].standingCharge,
+    function calculate2024() {
+      let bills = [];
 
-          farmer.payments,
-          monthsWithCharges[Mar - 1].month
+      for (let i = 1; i < 13; i++) {
+        bills.push(
+          ...farmer.map((farmer) => {
+            // if (currentMonth < Jan) {
+            //   return calculateBlank(
+            //     farmer.name,
+            //     farmer.plotNo ? farmer.plotNo : "",
+            //     farmer.readings[i - 1].value,
+            //     i - 2 < 0 ? 0 : farmer.readings[i - 2].value,
+            //     monthsWithCharges[i - 1].standingCharge,
+
+            //     farmer.payments,
+            //     monthsWithCharges[i - 1].month
+            //   );
+            // }
+            return calculate(
+              farmer.name,
+              farmer.id,
+              farmer.plotNo ? farmer.plotNo : "",
+
+              farmer.reading[i + 7].value,
+              farmer.reading[i + 7].id,
+              // i - 2 < 0 ? 0 : farmer.readings[i +2].value,
+              farmer.reading[i + 6].value,
+              2024,
+              monthsWithCharges[i - 1].standingCharge,
+
+              farmer.payment,
+              monthsWithCharges[i - 1].month
+            );
+          })
         );
       }
-      return calculate(
-        farmer.name,
-        farmer.id,
 
-        farmer.plotNo,
-        farmer.readings[Feb - 1].value,
-        farmer.readings[Feb - 1].id,
-        Feb - 2 < 0 ? 0 : farmer.readings[Feb - 2].value,
-        monthsWithCharges[Feb - 1].standingCharge,
+      return bills;
+    }
 
-        farmer.payments,
-        monthsWithCharges[Feb - 1].month
-      );
-    });
-    const billsMarch = farmer.map((farmer) => {
-      if (currentMonth < Mar) {
-        return calculateBlank(
-          farmer.name,
-          farmer.plotNo,
-          farmer.readings[Mar - 1].value,
-          Mar - 2 < 0 ? 0 : farmer.readings[Mar - 2].value,
-          monthsWithCharges[Mar - 1].standingCharge,
+    const totalBills = [...calculate2023(), ...calculate2024()];
 
-          farmer.payments,
-          monthsWithCharges[Mar - 1].month
-        );
-      }
-      return calculate(
-        farmer.name,
-        farmer.id,
-
-        farmer.plotNo,
-        farmer.readings[Mar - 1].value,
-        farmer.readings[Mar - 1].id,
-        Mar - 2 < 0 ? 0 : farmer.readings[Mar - 2].value,
-        monthsWithCharges[Mar - 1].standingCharge,
-
-        farmer.payments,
-        monthsWithCharges[Mar - 1].month
-      );
-    });
-
-    const billsApril = farmer.map((farmer) => {
-      if (currentMonth < Apr) {
-        return calculateBlank(
-          farmer.name,
-
-          farmer.plotNo,
-          farmer.readings[Apr - 1].value,
-          Apr - 2 < 0 ? 0 : farmer.readings[Apr - 2].value,
-          monthsWithCharges[Apr - 1].standingCharge,
-
-          farmer.payments,
-          monthsWithCharges[Apr - 1].month
-        );
-      }
-      return calculate(
-        farmer.name,
-        farmer.id,
-
-        farmer.plotNo,
-        farmer.readings[Apr - 1].value,
-        farmer.readings[Apr - 1].id,
-        Apr - 2 < 0 ? 0 : farmer.readings[Apr - 2].value,
-        monthsWithCharges[Apr - 1].standingCharge,
-
-        farmer.payments,
-        monthsWithCharges[Apr - 1].month
-      );
-    });
-
-    res.send([...billsJan, ...billsFeb, ...billsMarch, ...billsApril]);
+    res.send(totalBills);
   } catch (error) {
     if (error instanceof Error) {
       res.status(400).json({ error: error.message });

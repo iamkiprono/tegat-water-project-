@@ -1,12 +1,14 @@
 import express from 'express'
-import { addPayment, deletePayment, getPayments } from '../controllers/payment.controller'
+import { addMultiplePayments, addPayment, deletePayment, getPayments } from '../controllers/payment.controller'
 
 
 const router = express.Router()
 
 
 router.post("/", addPayment)
+router.post("/multiple", addMultiplePayments)
 router.get("/", getPayments)
+
 router.delete("/:id", deletePayment)
 
 export default router

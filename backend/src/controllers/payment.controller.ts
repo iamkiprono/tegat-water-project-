@@ -1,19 +1,19 @@
 import { prisma } from "../PrismaClient";
 import { Request, Response } from "express";
 
-export const getPayments = async (req:Request, res: Response)=>{
+export const getPayments = async (req: Request, res: Response) => {
   try {
     const payments = await prisma.payment.findMany({
-      include:{
-        farmer:true,
-      }
-    })
+      include: {
+        farmer: true,
+      },
+    });
 
-    res.send(payments)
+    res.send(payments);
   } catch (error) {
     if (error instanceof Error) res.status(400).json({ error: error.message });
   }
-}
+};
 
 export const addPayment = async (req: Request, res: Response) => {
   const { amount, paymentType, transactionId, farmerId } = req.body;
@@ -40,6 +40,22 @@ export const addPayment = async (req: Request, res: Response) => {
     });
 
     res.send(payment);
+  } catch (error) {
+    if (error instanceof Error) res.status(400).json({ error: error.message });
+  }
+};
+
+//multiple payments addition
+//post request
+export const addMultiplePayments = async (req: Request, res: Response) => {
+  const { payments } = req.body;
+
+  try {
+    const newPayments = await prisma.payment.createMany({
+      data: payments,
+    });
+
+    res.status(201).json(newPayments);
   } catch (error) {
     if (error instanceof Error) res.status(400).json({ error: error.message });
   }

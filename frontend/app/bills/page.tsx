@@ -9,12 +9,14 @@ import { Button } from "@/components/ui/button";
 import PaymentComponent from "../components/PaymentComponent";
 
 export const farmerType = {
+  
   name: "Justine Langat",
   farmerId: 1,
   plotNo: "24",
   currentId: 0,
   month: "February",
   current: 35,
+  year: 2023,
   prev: 23,
   count: 12,
   extraCount: 2,
@@ -28,7 +30,7 @@ export const farmerType = {
       id: 4,
       transactionId: "",
       amount: 500,
-      date: "2023-12-19T11:16:29.475Z",
+      date: new Date(),
       paymentType: "MPESA",
       farmerId: 1,
     },
@@ -41,6 +43,7 @@ const Page = () => {
   const url = "http://localhost:5000";
 
   const [month, setMonth] = useState("January");
+  const [year, setYear] = useState(2024);
   const [name, setName] = useState("");
 
   const [farmers, setFarmers] = useState<(typeof farmerType)[]>([]);
@@ -49,8 +52,14 @@ const Page = () => {
       // const res = await fetch("https://milimani-api.onrender.com/farmers/bills");
       const res = await fetch(`${url}/farmers/bills`);
       const data = await res.json();
+      if (!res.ok) {
+        throw Error(data.error);
+      }
+      console.log({ data });
       setFarmers(data);
-    } catch (error) {}
+    } catch (error) {
+      if (error instanceof Error) alert(error.message);
+    }
   };
 
   const updateReading = async (id: number, value: number) => {
@@ -79,6 +88,46 @@ const Page = () => {
     getFarmers();
   }, []);
 
+  const amundue: number[] = [];
+
+  const calculatesSomething = (
+    x: (typeof farmerType)[],
+    y: {
+      name: string;
+      farmerId: number;
+      plotNo: string;
+      currentId: number;
+      month: string;
+      current: number;
+      year: number;
+      prev: number;
+      count: number;
+      extraCount: number;
+      extraCharge: number;
+      standingCharge: number;
+      monthlyBill: number;
+      paid: number;
+      amountDue: number;
+      payments: {
+        id: number;
+        transactionId: string;
+        amount: number;
+        date: Date;
+        paymentType: string;
+        farmerId: number;
+      }[];
+    }
+  ) => {
+    const due =
+      x
+        .filter((farm) => farm.farmerId === y.farmerId)
+        .reduce((acc, cur) => acc + cur.monthlyBill, 0) - y.paid;
+
+    amundue.push(due);
+
+    return due;
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center">
@@ -100,6 +149,45 @@ const Page = () => {
             </option>
             <option className="px-6 py-2" value="April">
               April
+            </option>
+            <option className="px-6 py-2" value="May">
+              May
+            </option>
+            <option className="px-6 py-2" value="June">
+              June
+            </option>
+            <option className="px-6 py-2" value="July">
+              July
+            </option>
+            <option className="px-6 py-2" value="August">
+              August
+            </option>
+            <option className="px-6 py-2" value="September">
+              September
+            </option>
+
+            <option className="px-6 py-2" value="October">
+              October
+            </option>
+            <option className="px-6 py-2" value="November">
+              November
+            </option>
+            <option className="px-6 py-2" value="December">
+              December
+            </option>
+          </select>
+          <select
+            onChange={(e) => setYear(parseInt(e.target.value))}
+            className="border px-6 py-2 my-4"
+            name=""
+            id=""
+            value={year}
+          >
+            <option className="px-6 py-2" value={"2023"}>
+              2023
+            </option>
+            <option className="px-6 py-2" value={"2024"}>
+              2024
             </option>
           </select>
         </div>
@@ -124,11 +212,11 @@ const Page = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse border border-gray-300">
-          <thead>
-            <tr>
-              <th className="p-3 text-left bg-gray-100 border border-gray-300">
+      <div className="overflow-x-auto max-h-[90vh]">
+        <table className="min-w-full border-collapse border border-gray-300 ">
+          <thead className="w-screen sticky top-0 ">
+            <tr className="">
+              <th className="p-3 text-left bg-gray-100 border border-gray-300 ">
                 No
               </th>
               <th className="p-3 text-left bg-gray-100 border border-gray-300">
@@ -186,12 +274,16 @@ const Page = () => {
                     .toLocaleLowerCase()
                     .includes(name.toLocaleLowerCase())
               )
+              .filter((farmer) => farmer.year === year)
               .filter((farmer) => farmer.month === month)
               .map((farmer, i) => {
                 return (
-                  <tr key={farmer.plotNo}>
+                  <tr
+                    className={`${i % 2 === 0 ? "bg-gray-200" : ""}`}
+                    key={farmer.plotNo}
+                  >
                     <td className="p-3 border border-gray-300">{i + 1}</td>
-                    <td className="p-3 border border-gray-300">
+                    <td className="p-3 border border-gray-300 font-bold">
                       {farmer.name}
                     </td>
                     <td className="p-3 border border-gray-300">
@@ -200,11 +292,13 @@ const Page = () => {
                     <td className="p-3 border border-gray-300">
                       {farmer.month}
                     </td>
-                    <td className="p-3 border border-gray-300">
-                      {farmer.current}
+                    <td className="p-3 border border-gray-300 font-bold">
+                      {farmer.current} m<sup>3</sup>
                       <button
                         onClick={() => {
-                          const value = prompt("Enter current reading");
+                          const value = prompt(
+                            `Enter ${farmer.month} reading for ${farmer.name}`
+                          );
                           if (value) {
                             updateReading(farmer.currentId, parseInt(value));
                           }
@@ -215,10 +309,10 @@ const Page = () => {
                       </button>
                     </td>
                     <td className="p-3 border border-gray-300">
-                      {farmer.prev}
+                      {farmer.prev} m3
                     </td>
-                    <td className="p-3 border border-gray-300">
-                      {farmer.count}
+                    <td className="p-3 border border-gray-300 ">
+                      {farmer.count} m3
                     </td>
                     <td className="p-3 border border-gray-300">
                       {farmer.extraCount}
@@ -227,20 +321,21 @@ const Page = () => {
                       {farmer.extraCharge}
                     </td>
                     <td className="p-3 border border-gray-300">
-                      {farmer.standingCharge}
+                      {farmer.standingCharge}/=
                     </td>
-                    <td className="p-3 border border-gray-300">
-                      {farmer.monthlyBill}
+                    <td className="p-3 border border-gray-300 font-bold">
+                      {farmer.monthlyBill.toLocaleString()}/=
                     </td>
-                    <td className="p-3 border border-gray-300">
+                    <td className="p-3 border border-gray-300 font-bold">
                       {farmers
-                        .filter((farm) => farm.plotNo === farmer.plotNo)
-                        .reduce((acc, cur) => acc + cur.monthlyBill, 0)}
+                        .filter((farm) => farm.farmerId === farmer.farmerId)
+                        .reduce((acc, cur) => acc + cur.monthlyBill, 0)
+                        .toLocaleString()}
+                      /=
                     </td>
-                    <td className="p-3 border border-gray-300 flex items-center  gap-2">
-                      {farmer.paid}
+                    <td className="p-3 border font-bold  flex items-center  gap-2">
+                      {farmer.paid.toLocaleString()}/=
                       {/* <button  onClick={()=>alert(farmer.farmerId)} className="ml-4 border rounded px-1">+</button> */}
-
                       {/* <DrawerComponent
                         id={farmer.farmerId}
                         name={farmer.name}
@@ -252,16 +347,23 @@ const Page = () => {
                       />
                     </td>
 
-                    <td className="p-3 border border-gray-300">
-                      {farmers
-                        .filter((farm) => farm.plotNo === farmer.plotNo)
-                        .reduce((acc, cur) => acc + cur.monthlyBill, 0) -
-                        farmer.paid}
+                    <td className="p-3 border border-gray-300 font-bold">
+                      {
+                        calculatesSomething(farmers, farmer)
+
+                        // (
+                        //   farmers
+                        //     .filter((farm) => farm.farmerId === farmer.farmerId)
+                        //     .reduce((acc, cur) => acc + cur.monthlyBill, 0) -
+                        //   farmer.paid
+                        // ).toLocaleString()
+                      }
+                      /=
                     </td>
                   </tr>
                 );
               })}
-            <tr>
+            <tr className="sticky bottom-0 bg-gray-400 text-black font-bold text-lg">
               {!name && <td className="p-3 border border-gray-300">Total</td>}
               <td className="p-3 border border-gray-300"></td>
               <td className="p-3 border border-gray-300"></td>
@@ -275,11 +377,20 @@ const Page = () => {
               {!name && (
                 <td className="p-3 border border-gray-300 font-bold">
                   {farmers
-                    .filter((farmer) => farmer.month === month)
+                    .filter(
+                      (farmer) => farmer.month === month && farmer.year === year
+                    )
                     .reduce((acc, curr) => acc + curr.monthlyBill, 0)
                     .toLocaleString()}
+                  /=
                 </td>
               )}
+              <td className="p-3 border border-gray-300"></td>
+              <td className="p-3 border border-gray-300"></td>
+              <td className="p-3 border border-gray-300">
+                {amundue.reduce((acc, curr) => acc + curr, 0).toLocaleString()}
+                /=
+              </td>
             </tr>
           </tbody>
         </table>
