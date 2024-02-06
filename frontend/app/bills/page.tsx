@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import PaymentComponent from "../components/PaymentComponent";
 
 const farmerType = {
-  
   name: "Justine Langat",
   farmerId: 1,
   plotNo: "24",
@@ -39,6 +38,8 @@ const farmerType = {
 
 const Page = () => {
   const router = useRouter();
+
+  
 
   const url = process.env.NEXT_PUBLIC_URL;
 
