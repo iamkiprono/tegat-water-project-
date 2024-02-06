@@ -8,6 +8,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Milimani Water Project",
   description: "",
+  manifest: "/manifest.json",
+  icons: { apple: "/icon.png" },
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({
