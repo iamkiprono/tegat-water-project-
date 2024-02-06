@@ -29,7 +29,8 @@ const PaymentComponent = ({
   name: string;
   id: number;
 }) => {
-  const url = "http://localhost:5000";
+
+  const url = process.env.NEXT_PUBLIC_URL;
 
   const [amount, setAmount] = useState("");
   const [transactionId, setTransactionId] = useState("");

@@ -4,7 +4,8 @@ import React, { useState } from "react";
 
 const AddFarmer = () => {
 
-  const url = "http://localhost:5000";
+  
+  const url = process.env.NEXT_PUBLIC_URL;
 
 
   const [name, setName] = useState("");

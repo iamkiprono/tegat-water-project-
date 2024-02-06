@@ -18,10 +18,13 @@ const DrawerComponent = ({ id, name }: { id: number; name: string }) => {
   const [transactionId, setTransactionId] = useState("");
   const [paymentType, setPaymentType] = useState("BANK");
 
+  
+  const url = process.env.NEXT_PUBLIC_URL;
+
   const addPayment = async () => {
     try {
       // return console.log({amount: parseInt(amount),transactionId,paymentType,id})
-      const res = await fetch("http://localhost:5000/payments", {
+      const res = await fetch(`${url}/payments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

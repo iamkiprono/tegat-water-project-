@@ -131,14 +131,14 @@ const getFarmersBills = (req, res) => __awaiter(void 0, void 0, void 0, function
             },
         });
         const hasNext = pageNumber < totalPages;
-        return res.json({
-            items: farmer,
-            pageInfo: {
-                currentPage: pageNumber,
-                totalPages,
-                hasNext,
-            },
-        });
+        // return res.json({
+        //   items: farmer,
+        //   pageInfo: {
+        //     currentPage: pageNumber,
+        //     totalPages,
+        //     hasNext,
+        //   },
+        // });
         // months and standing charges
         const nov2023 = 6;
         const dec2023 = 7;

@@ -40,7 +40,7 @@ export const farmerType = {
 const Page = () => {
   const router = useRouter();
 
-  const url = "http://localhost:5000";
+  const url = process.env.NEXT_PUBLIC_URL;
 
   const [month, setMonth] = useState("January");
   const [year, setYear] = useState(2024);

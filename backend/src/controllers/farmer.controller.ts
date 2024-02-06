@@ -134,14 +134,14 @@ export const getFarmersBills = async (req: Request, res: Response) => {
 
     const hasNext = pageNumber < totalPages;
 
-    return res.json({
-      items: farmer,
-      pageInfo: {
-        currentPage: pageNumber,
-        totalPages,
-        hasNext,
-      },
-    });
+    // return res.json({
+    //   items: farmer,
+    //   pageInfo: {
+    //     currentPage: pageNumber,
+    //     totalPages,
+    //     hasNext,
+    //   },
+    // });
 
     // months and standing charges
 
