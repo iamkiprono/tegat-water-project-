@@ -93,7 +93,7 @@ const getFarmers = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                     },
                 },
                 payment: true,
-                balance: true,
+                prev_balance: true,
             },
         });
         res.send(farmer);
@@ -127,7 +127,7 @@ const getFarmersBills = (req, res) => __awaiter(void 0, void 0, void 0, function
                     ],
                 },
                 payment: true,
-                balance: true,
+                prev_balance: true,
             },
         });
         const hasNext = pageNumber < totalPages;
@@ -259,7 +259,7 @@ const getFarmersBills = (req, res) => __awaiter(void 0, void 0, void 0, function
                     .map((farmer) => {
                     var _a;
                     if (i < 2) {
-                        return (0, Calculation_1.calculateBlank)(farmer.name, farmer.id, farmer.plotNo ? farmer.plotNo : "", farmer.reading[i + -1].value, farmer.reading[i + -1].id, i - 2 < 0 ? 0 : farmer.reading[i + -2].value, 2023, monthsWithCharges2023[i - 1].standingCharge, farmer.payment, monthsWithCharges2023[i - 1].month, ((_a = farmer === null || farmer === void 0 ? void 0 : farmer.balance[0]) === null || _a === void 0 ? void 0 : _a.amount) ? farmer.balance[0].amount : 0);
+                        return (0, Calculation_1.calculateBlank)(farmer.name, farmer.id, farmer.plotNo ? farmer.plotNo : "", farmer.reading[i + -1].value, farmer.reading[i + -1].id, i - 2 < 0 ? 0 : farmer.reading[i + -2].value, 2023, monthsWithCharges2023[i - 1].standingCharge, farmer.payment, monthsWithCharges2023[i - 1].month, ((_a = farmer === null || farmer === void 0 ? void 0 : farmer.prev_balance[0]) === null || _a === void 0 ? void 0 : _a.amount) ? farmer.prev_balance[0].amount : 0);
                     }
                     return (0, Calculation_1.calculate)(farmer.name, farmer.id, farmer.plotNo ? farmer.plotNo : "", farmer.reading[i + -1].value, farmer.reading[i + -1].id, i - 2 < 0 ? 0 : farmer.reading[i + -2].value, 2023, monthsWithCharges2023[i - 1].standingCharge, farmer.payment, monthsWithCharges2023[i - 1].month);
                 }));

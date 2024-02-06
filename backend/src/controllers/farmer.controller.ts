@@ -90,7 +90,7 @@ export const getFarmers = async (req: Request, res: Response) => {
         },
 
         payment: true,
-        balance: true,
+        prev_balance: true,
       },
     });
 
@@ -128,7 +128,7 @@ export const getFarmersBills = async (req: Request, res: Response) => {
         },
 
         payment: true,
-        balance: true,
+        prev_balance: true,
       },
     });
 
@@ -282,7 +282,7 @@ export const getFarmersBills = async (req: Request, res: Response) => {
 
                   farmer.payment,
                   monthsWithCharges2023[i - 1].month,
-                  farmer?.balance[0]?.amount ? farmer.balance[0].amount : 0
+                  farmer?.prev_balance[0]?.amount ? farmer.prev_balance[0].amount : 0
                 );
               }
               return calculate(

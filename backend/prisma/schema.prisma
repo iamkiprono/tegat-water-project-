@@ -8,12 +8,13 @@ datasource db {
 }
 
 model farmer {
-  id      Int            @id @default(autoincrement())
-  name    String
-  plotNo  String?        @unique(map: "Farmer_plotNo_key")
-  payment payment[]
-  balance prev_balance[]
-  reading reading[]
+  id           Int            @id @default(autoincrement())
+  name         String
+  plotNo       String?        @unique(map: "Farmer_plotNo_key")
+  payment      payment[]
+  prev_balance prev_balance[]
+  reading      reading[]
+  
 }
 
 model payment {
@@ -28,6 +29,15 @@ model payment {
   @@index([farmerId], map: "Payment_farmerId_fkey")
 }
 
+model prev_balance {
+  id       Int     @id @default(autoincrement())
+  amount   Int?
+  farmerId Int?
+  farmer   farmer? @relation(fields: [farmerId], references: [id])
+
+  @@index([farmerId], map: "prev_balance_farmerId_fkey")
+}
+
 model reading {
   id       Int    @id @default(autoincrement())
   month    Int
@@ -37,13 +47,4 @@ model reading {
   farmer   farmer @relation(fields: [farmerId], references: [id], map: "Reading_farmerId_fkey")
 
   @@unique([farmerId, month, year], map: "Reading_farmerId_month_year_key")
-}
-
-model prev_balance {
-  id       Int     @id @default(autoincrement())
-  amount   Int?
-  farmerId Int?
-  farmer   farmer? @relation(fields: [farmerId], references: [id])
-
-  @@index([farmerId], map: "prev_balance_farmerId_fkey")
 }
