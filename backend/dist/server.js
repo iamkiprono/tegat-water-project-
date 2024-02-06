@@ -9,13 +9,17 @@ const farmer_routes_1 = __importDefault(require("./routes/farmer.routes"));
 const payment_routes_1 = __importDefault(require("./routes/payment.routes"));
 const reading_routes_1 = __importDefault(require("./routes/reading.routes"));
 const coop_routes_1 = __importDefault(require("./routes/coop.routes"));
+const balance_routes_1 = __importDefault(require("./routes/balance.routes"));
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
+// all routes
 app.use('/farmers', farmer_routes_1.default);
 app.use('/payments', payment_routes_1.default);
 app.use('/readings', reading_routes_1.default);
 app.use('/coop', coop_routes_1.default);
+// one time use for adding prev balances
+app.use('/balance', balance_routes_1.default);
 app.listen(5000, () => {
     console.log(`Listening on 5000`);
 });

@@ -78,13 +78,13 @@
 // ];
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.calculateBlank = exports.calculate = void 0;
-const calculate = (name, farmerId, plotNo, current, currentId, prev, standingCharge, payments, month) => {
+const calculate = (name, farmerId, plotNo, current, currentId, prev, year, standingCharge, payments, month) => {
     const count = current === 0 ? 0 : current - prev;
     const extraCount = count < 10 ? 0 : count - 10;
     const extraCharge = extraCount * 50;
     const paid = payments.reduce((acc, cur) => acc + cur.amount, 0);
     const monthlyBill = current === 0 ? 0 : standingCharge + extraCharge;
-    const amountDue = monthlyBill - paid;
+    const amountDue = monthlyBill;
     return {
         name,
         plotNo,
@@ -93,6 +93,7 @@ const calculate = (name, farmerId, plotNo, current, currentId, prev, standingCha
         current,
         currentId,
         prev,
+        year,
         count,
         extraCount,
         extraCharge,
@@ -104,24 +105,30 @@ const calculate = (name, farmerId, plotNo, current, currentId, prev, standingCha
     };
 };
 exports.calculate = calculate;
-const calculateBlank = (name, plotNo, current, prev, standingCharge, payments, month) => {
+const calculateBlank = (name, farmerId, plotNo, current, currentId, prev, year, standingCharge, payments, month, balance) => {
     const count = current - prev;
     const extraCount = count < 10 ? 0 : count - 10;
     const extraCharge = extraCount * 50;
     const paid = payments.reduce((acc, cur) => acc + cur.amount, 0);
-    const monthlyBill = current === 0 ? 0 : standingCharge + extraCharge;
-    const amountDue = monthlyBill - paid;
+    const monthlyBill = balance;
+    // const monthlyBill = standingCharge + extraCharge;
+    // const monthlyBill = current === 0 ? 0 : standingCharge + extraCharge;
+    const amountDue = monthlyBill;
     return {
         name,
         plotNo,
+        farmerId,
         month,
-        current: current === 0 ? prev : current,
+        current,
+        currentId,
         prev,
+        year,
         count,
         extraCount,
         extraCharge,
         standingCharge,
-        monthlyBill: 0,
+        // monthlyBill: year === 2023 && month === "May" ? 0 : monthlyBill,
+        monthlyBill,
         payments,
         paid,
         amountDue,

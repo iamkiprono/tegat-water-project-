@@ -10,4 +10,5 @@ router.put('/', farmer_controller_1.updateReading);
 router.get('/', farmer_controller_1.getFarmers);
 router.get('/bills', farmer_controller_1.getFarmersBills);
 router.post('/', farmer_controller_1.createFarmer);
+router.post('/many', farmer_controller_1.createManyFarmers);
 exports.default = router;

@@ -9,14 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletePayment = exports.addPayment = exports.getPayments = void 0;
+exports.deletePayment = exports.addMultiplePayments = exports.addPayment = exports.getPayments = void 0;
 const PrismaClient_1 = require("../PrismaClient");
 const getPayments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const payments = yield PrismaClient_1.prisma.payment.findMany({
             include: {
                 farmer: true,
-            }
+            },
         });
         res.send(payments);
     }
@@ -55,6 +55,22 @@ const addPayment = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.addPayment = addPayment;
+//multiple payments addition
+//post request
+const addMultiplePayments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { payments } = req.body;
+    try {
+        const newPayments = yield PrismaClient_1.prisma.payment.createMany({
+            data: payments,
+        });
+        res.status(201).json(newPayments);
+    }
+    catch (error) {
+        if (error instanceof Error)
+            res.status(400).json({ error: error.message });
+    }
+});
+exports.addMultiplePayments = addMultiplePayments;
 const deletePayment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
