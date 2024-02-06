@@ -39,26 +39,31 @@ const farmerType = {
 const Page = () => {
   const router = useRouter();
 
-  
-
   const url = process.env.NEXT_PUBLIC_URL;
 
   const [month, setMonth] = useState("January");
   const [year, setYear] = useState(2024);
   const [name, setName] = useState("");
 
+  const [loading, setLoading] = useState(false);
+
+  const [pageNumber, setPageNumber] = useState(1);
+
   const [farmers, setFarmers] = useState<(typeof farmerType)[]>([]);
   const getFarmers = async () => {
     try {
+      setLoading(true);
       // const res = await fetch("https://milimani-api.onrender.com/farmers/bills");
-      const res = await fetch(`${url}/farmers/bills`);
+      const res = await fetch(`${url}/farmers/bills?page=${pageNumber}`);
       const data = await res.json();
       if (!res.ok) {
         throw Error(data.error);
       }
       console.log({ data });
       setFarmers(data);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       if (error instanceof Error) alert(error.message);
     }
   };
@@ -87,7 +92,7 @@ const Page = () => {
 
   useEffect(() => {
     getFarmers();
-  }, []);
+  }, [pageNumber]);
 
   const amundue: number[] = [];
 
@@ -131,6 +136,10 @@ const Page = () => {
 
   return (
     <div>
+      <div className="h-2">
+
+      {loading && "Loading..."}
+      </div>
       <div className="flex justify-between items-center">
         <div>
           <select
@@ -283,7 +292,9 @@ const Page = () => {
                     className={`${i % 2 === 0 ? "bg-gray-200" : ""}`}
                     key={farmer.plotNo}
                   >
-                    <td className="p-3 border border-gray-300">{i + 1}</td>
+                    <td className="p-3 border border-gray-300">
+                      {pageNumber * 10 - i + 1}
+                    </td>
                     <td className="p-3 border border-gray-300 font-bold">
                       {farmer.name}
                     </td>
@@ -395,6 +406,22 @@ const Page = () => {
             </tr>
           </tbody>
         </table>
+
+        <div className="px-6 py-2 border flex gap-2">
+          {Array.from(new Array(15)).map((no, i) => {
+            return (
+              <button
+                onClick={(e) => setPageNumber(i + 1)}
+                className={`border px-4 py-2 ${
+                  pageNumber === i + 1 ? "bg-black text-white" : ""
+                }`}
+                key={no}
+              >
+                {i + 1}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

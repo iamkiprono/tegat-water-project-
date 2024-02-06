@@ -103,8 +103,13 @@ export const getFarmers = async (req: Request, res: Response) => {
 };
 
 export const getFarmersBills = async (req: Request, res: Response) => {
+
+  const {page}=req.query
+  console.log(typeof page)
+
   try {
-    const pageNumber = 15;
+    // @ts-ignore
+    const pageNumber = parseInt(page)
     const itemsPerPage = 10;
     const totalItems = await prisma.farmer.count();
     const totalPages = Math.ceil(totalItems / itemsPerPage);
