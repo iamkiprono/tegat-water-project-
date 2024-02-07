@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import PaymentComponent from "../components/PaymentComponent";
+import { AddReadningComponent } from "../components/AddReadingConponent";
 
 const farmerType = {
   name: "Justine Langat",
@@ -135,12 +136,9 @@ const Page = () => {
   };
 
   return (
-    <div>
-      <div className="h-2">
-
-      {loading && "Loading..."}
-      </div>
-      <div className="flex justify-between items-center">
+    <div className="w-full">
+      <div className="h-2">{loading && "Loading..."}</div>
+      <div className="flex justify-between items-center   w-full ">
         <div>
           <select
             onChange={(e) => setMonth(e.target.value)}
@@ -222,7 +220,7 @@ const Page = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto max-h-[90vh]">
+      <div className="max-h-[90vh] p-6">
         <table className="min-w-full border-collapse border border-gray-300 ">
           <thead className="w-screen sticky top-0 ">
             <tr className="">
@@ -306,6 +304,7 @@ const Page = () => {
                     </td>
                     <td className="p-3 border border-gray-300 font-bold">
                       {farmer.current} m<sup>3</sup>
+                      <AddReadningComponent name={farmer.name} month={farmer.month}/>
                       <button
                         onClick={() => {
                           const value = prompt(

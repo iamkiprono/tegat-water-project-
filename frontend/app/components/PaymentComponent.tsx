@@ -12,6 +12,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { useState } from "react";
+import DeleteAlert from "./DeleteAlert";
 
 const PaymentComponent = ({
   payments,
@@ -25,11 +26,10 @@ const PaymentComponent = ({
     date: Date;
     paymentType: string;
     farmerId: number;
-}[];
+  }[];
   name: string;
   id: number;
 }) => {
-
   const url = process.env.NEXT_PUBLIC_URL;
 
   const [amount, setAmount] = useState("");
@@ -139,7 +139,8 @@ const PaymentComponent = ({
                               {payment.paymentType}
                             </td>
                             <td className="border border-gray-300 px-4 py-2">
-                              <Button
+                              <DeleteAlert />
+                              {/* <Button
                                 onClick={() => {
                                   if (
                                     confirm(
@@ -152,7 +153,7 @@ const PaymentComponent = ({
                                 variant={"destructive"}
                               >
                                 Delete record
-                              </Button>
+                              </Button> */}
                             </td>
                           </tr>
                         )}
