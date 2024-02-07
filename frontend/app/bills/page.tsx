@@ -138,7 +138,7 @@ const Page = () => {
   return (
     <div className="w-full">
       <div className="h-2">{loading && "Loading..."}</div>
-      <div className="flex justify-between items-center   w-full ">
+      <div className="flex justify-around items-center   w-full ">
         <div>
           <select
             onChange={(e) => setMonth(e.target.value)}
@@ -209,7 +209,7 @@ const Page = () => {
             Refresh
           </button>
         </div>
-        <div>
+        {/* <div>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -217,7 +217,7 @@ const Page = () => {
             className="border px-4 py-2"
             type="search"
           />
-        </div>
+        </div> */}
       </div>
 
       <div className="max-h-[90vh] p-6">
@@ -291,7 +291,7 @@ const Page = () => {
                     key={farmer.plotNo}
                   >
                     <td className="p-3 border border-gray-300">
-                      {pageNumber * 10 - i + 1}
+                      {(pageNumber - 1) * 10 + (i + 1)}
                     </td>
                     <td className="p-3 border border-gray-300 font-bold">
                       {farmer.name}
@@ -304,8 +304,14 @@ const Page = () => {
                     </td>
                     <td className="p-3 border border-gray-300 font-bold">
                       {farmer.current} m<sup>3</sup>
-                      <AddReadningComponent name={farmer.name} month={farmer.month}/>
-                      <button
+                      <AddReadningComponent
+                        name={farmer.name}
+                        month={farmer.month}
+                        currentId={farmer.currentId}
+                        currentValue={farmer.current}
+                        update={updateReading}
+                      />
+                      {/* <button
                         onClick={() => {
                           const value = prompt(
                             `Enter ${farmer.month} reading for ${farmer.name}`
@@ -317,7 +323,7 @@ const Page = () => {
                         className="px-2 border ml-2"
                       >
                         +
-                      </button>
+                      </button> */}
                     </td>
                     <td className="p-3 border border-gray-300">
                       {farmer.prev} m3

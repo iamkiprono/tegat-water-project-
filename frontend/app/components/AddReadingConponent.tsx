@@ -10,42 +10,60 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useState } from "react";
 
 export function AddReadningComponent({
   name,
   month,
+  update,
+  currentValue,
+  currentId,
 }: {
   name: string;
   month: string;
+  update: (id: number, value: number) => void;
+  currentValue: number;
+  currentId: number;
 }) {
+  const [value, setValue] = useState(currentValue);
+
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Edit Profile</Button>
+        <Button variant="outline">+</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent
+        onSubmit={() => update(currentId, value)}
+        className="sm:max-w-[425px]"
+      >
         <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
-          <DialogDescription>
-            Make changes to your profile here. Click save when you are done. {name} {month}
-          </DialogDescription>
+          <DialogTitle>
+            Add {month} Reading for {name}
+          </DialogTitle>
+          <DialogDescription></DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
               Name
             </Label>
-            <Input id="name" value="Pedro Duarte" className="col-span-3" />
+         {name}
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="username" className="text-right">
-              Username
+              Reading
             </Label>
-            <Input id="username" value="@peduarte" className="col-span-3" />
+            <Input
+              onChange={(e) => {
+                setValue(parseInt(e.target.value));
+              }}
+              placeholder={currentValue.toString()}
+              className="col-span-3"
+            />
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit">Save changes</Button>
+          <Button onClick={() => update(currentId, value)} type="submit">Save changes</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
