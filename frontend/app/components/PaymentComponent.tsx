@@ -14,6 +14,9 @@ import {
 import { useState } from "react";
 import DeleteAlert from "./DeleteAlert";
 
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { useToast } from "@/components/ui/use-toast";
+
 const PaymentComponent = ({
   payments,
   name,
@@ -32,13 +35,18 @@ const PaymentComponent = ({
 }) => {
   const url = process.env.NEXT_PUBLIC_URL;
 
+  const { toast } = useToast();
+
   const [amount, setAmount] = useState("");
   const [transactionId, setTransactionId] = useState("");
   const [paymentType, setPaymentType] = useState("BANK");
   const [currentPayments, setCurrentPayments] = useState(payments);
 
+  const [loading, setLoading] = useState(false);
+
   const addPayment = async () => {
     try {
+      setLoading(true);
       // return console.log({amount: parseInt(amount),transactionId,paymentType,id})
       const res = await fetch(`${url}/payments`, {
         method: "POST",
@@ -52,17 +60,26 @@ const PaymentComponent = ({
           paymentType,
         }),
       });
+      setLoading(false);
 
       const data = await res.json();
       if (!res.ok) {
         throw Error(data.error);
       }
       setCurrentPayments([...currentPayments, data]);
-      alert("Payment Added!");
-
+      toast({
+        title: "Success",
+        description: "Payment added successfully",
+      });
       console.log(data);
     } catch (error) {
-      if (error instanceof Error) alert(error.message);
+      setLoading(false);
+      if (error instanceof Error)
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: error.message,
+        });
     }
   };
 
@@ -121,7 +138,7 @@ const PaymentComponent = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {payments.map((payment) => {
+                  {currentPayments.map((payment) => {
                     return (
                       <>
                         {payment.amount !== 0 && (
@@ -139,7 +156,10 @@ const PaymentComponent = ({
                               {payment.paymentType}
                             </td>
                             <td className="border border-gray-300 px-4 py-2">
-                              <DeleteAlert />
+                              <DeleteAlert
+                                deletePay={deletePayment}
+                                id={payment.id}
+                              />
                               {/* <Button
                                 onClick={() => {
                                   if (
@@ -197,18 +217,24 @@ const PaymentComponent = ({
                     </td>
                     <td className="border border-gray-300 ">
                       <select
+                        onChange={(e) => setPaymentType(e.target.value)}
                         className="w-full border rounded p-2 "
                         name=""
                         id=""
                       >
-                        <option value="">BANK</option>
-                        <option value="">M-PESA</option>
-                        <option value="">CASH</option>
-                        <option value="">OTHER</option>
+                        <option value="BANK">BANK</option>
+                        <option value="M-PESA">M-PESA</option>
+                        <option value="CASH">CASH</option>
+                        <option value="OTHER">OTHER</option>
                       </select>
                     </td>
                     <td className="border border-gray-300 ">
-                      <Button onClick={() => addPayment()}>Submit</Button>
+                      <Button disabled={loading} onClick={() => addPayment()}>
+                        {loading && (
+                          <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                        )}
+                        {!loading && "Submit payment"}
+                      </Button>
                     </td>
                   </tr>
                 </tbody>

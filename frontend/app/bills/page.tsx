@@ -8,8 +8,11 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import PaymentComponent from "../components/PaymentComponent";
 import { AddReadningComponent } from "../components/AddReadingConponent";
+import { InvoiceDialog } from "../components/InvoiceDialog";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { useToast } from "@/components/ui/use-toast";
 
-const farmerType = {
+export const farmerType = {
   name: "Justine Langat",
   farmerId: 1,
   plotNo: "24",
@@ -40,6 +43,8 @@ const farmerType = {
 const Page = () => {
   const router = useRouter();
 
+  const { toast } = useToast();
+
   const url = process.env.NEXT_PUBLIC_URL;
 
   const [month, setMonth] = useState("January");
@@ -48,9 +53,12 @@ const Page = () => {
 
   const [loading, setLoading] = useState(false);
 
+  const [addReading, setAddReading] = useState(false);
+
   const [pageNumber, setPageNumber] = useState(1);
 
   const [farmers, setFarmers] = useState<(typeof farmerType)[]>([]);
+
   const getFarmers = async () => {
     try {
       setLoading(true);
@@ -71,6 +79,7 @@ const Page = () => {
 
   const updateReading = async (id: number, value: number) => {
     try {
+      setAddReading(true);
       const res = await fetch(`${url}/readings`, {
         method: "PUT",
         headers: {
@@ -78,14 +87,24 @@ const Page = () => {
         },
         body: JSON.stringify({ id, value }),
       });
+      setAddReading(false);
 
       const data = await res.json();
       getFarmers();
 
+      toast({
+        title: "Reading added",
+        description: "Reading updated succesfully",
+      });
       console.log(data);
     } catch (error) {
+      setAddReading(false);
       if (error instanceof Error) {
-        alert(error.message);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: error.message,
+        });
       }
     }
   };
@@ -137,7 +156,6 @@ const Page = () => {
 
   return (
     <div className="w-full">
-      <div className="h-2">{loading && "Loading..."}</div>
       <div className="flex justify-around items-center   w-full ">
         <div>
           <select
@@ -199,6 +217,7 @@ const Page = () => {
             </option>
           </select>
         </div>
+        <div></div>
         <div>
           <button
             onClick={() => {
@@ -209,6 +228,20 @@ const Page = () => {
             Refresh
           </button>
         </div>
+        <Link
+          href={"/dashboard"}
+          className="border px-6 py-2 my-4 bg-black text-white hover:bg-white hover:text-black "
+        >
+          Dashboard
+        </Link>
+
+        <InvoiceDialog />
+        {/* <Link
+          href={"/invoices"}
+          className="border px-6 py-2 my-4 bg-black text-white hover:bg-white hover:text-black "
+        >
+          Invoices
+        </Link> */}
         {/* <div>
           <input
             value={name}
@@ -221,97 +254,104 @@ const Page = () => {
       </div>
 
       <div className="max-h-[90vh] p-6">
-        <table className="min-w-full border-collapse border border-gray-300 ">
-          <thead className="w-screen sticky top-0 ">
-            <tr className="">
-              <th className="p-3 text-left bg-gray-100 border border-gray-300 ">
-                No
-              </th>
-              <th className="p-3 text-left bg-gray-100 border border-gray-300">
-                Name
-              </th>
-              <th className="p-3 text-left bg-gray-100 border border-gray-300">
-                Plot No
-              </th>
-              <th className="p-3 text-left bg-gray-100 border border-gray-300">
-                Month
-              </th>
-              <th className="p-3 text-left bg-gray-100 border border-gray-300">
-                Curr Reading
-              </th>
-              <th className="p-3 text-left bg-gray-100 border border-gray-300">
-                Prev Reading
-              </th>
-              <th className="p-3 text-left bg-gray-100 border border-gray-300">
-                Count
-              </th>
-              <th className="p-3 text-left bg-gray-100 border border-gray-300">
-                Extra Count
-              </th>
-              <th className="p-3 text-left bg-gray-100 border border-gray-300">
-                Extra Charge
-              </th>
-              <th className="p-3 text-left bg-gray-100 border border-gray-300">
-                Standing Charge
-              </th>
-              <th className="p-3 text-left bg-gray-100 border border-gray-300">
-                Monthly bill<br></br>{" "}
-                <span className="italic font-light">({month})</span>
-              </th>
-              <th className="p-3 text-left bg-gray-100 border border-gray-300">
-                Total <br></br>{" "}
-                <span className="italic font-light">(all months)</span>
-              </th>
-              <th className="p-3 text-left bg-gray-100 border border-gray-300">
-                Total Paid
-              </th>
+        {loading ? (
+          <div className="h-[90vh] flex flex-col items-center justify-center">
+            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+            Loading....
+          </div>
+        ) : (
+          <table className="min-w-full border-collapse border border-gray-300 ">
+            <thead className="w-screen sticky top-0 ">
+              <tr className="">
+                <th className="p-3 text-left bg-gray-100 border border-gray-300 ">
+                  No
+                </th>
+                <th className="p-3 text-left bg-gray-100 border border-gray-300">
+                  Name
+                </th>
+                <th className="p-3 text-left bg-gray-100 border border-gray-300">
+                  Plot No
+                </th>
+                <th className="p-3 text-left bg-gray-100 border border-gray-300">
+                  Month
+                </th>
+                <th className="p-3 text-left bg-gray-100 border border-gray-300">
+                  Curr Reading
+                </th>
+                <th className="p-3 text-left bg-gray-100 border border-gray-300">
+                  Prev Reading
+                </th>
+                <th className="p-3 text-left bg-gray-100 border border-gray-300">
+                  Count
+                </th>
+                <th className="p-3 text-left bg-gray-100 border border-gray-300">
+                  Extra Count
+                </th>
+                <th className="p-3 text-left bg-gray-100 border border-gray-300">
+                  Extra Charge
+                </th>
+                <th className="p-3 text-left bg-gray-100 border border-gray-300">
+                  Standing Charge
+                </th>
+                <th className="p-3 text-left bg-gray-100 border border-gray-300">
+                  Monthly bill<br></br>{" "}
+                  <span className="italic font-light">({month})</span>
+                </th>
+                <th className="p-3 text-left bg-gray-100 border border-gray-300">
+                  Total <br></br>{" "}
+                  <span className="italic font-light">(all months)</span>
+                </th>
+                <th className="p-3 text-left bg-gray-100 border border-gray-300">
+                  Total Paid
+                </th>
 
-              <th className="p-3 text-left bg-gray-100 border border-gray-300">
-                Amount Due
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {farmers
-              .filter(
-                (farmer) =>
-                  farmer.name
-                    .toLocaleLowerCase()
-                    .includes(name.toLocaleLowerCase()) ||
-                  farmer.plotNo
-                    .toLocaleLowerCase()
-                    .includes(name.toLocaleLowerCase())
-              )
-              .filter((farmer) => farmer.year === year)
-              .filter((farmer) => farmer.month === month)
-              .map((farmer, i) => {
-                return (
-                  <tr
-                    className={`${i % 2 === 0 ? "bg-gray-200" : ""}`}
-                    key={farmer.plotNo}
-                  >
-                    <td className="p-3 border border-gray-300">
-                      {(pageNumber - 1) * 10 + (i + 1)}
-                    </td>
-                    <td className="p-3 border border-gray-300 font-bold">
-                      {farmer.name}
-                    </td>
-                    <td className="p-3 border border-gray-300">
-                      {farmer.plotNo}
-                    </td>
-                    <td className="p-3 border border-gray-300">
-                      {farmer.month}
-                    </td>
-                    <td className="p-3 border border-gray-300 font-bold">
-                      {farmer.current} m<sup>3</sup>
-                      <AddReadningComponent
-                        name={farmer.name}
-                        month={farmer.month}
-                        currentId={farmer.currentId}
-                        currentValue={farmer.current}
-                        update={updateReading}
-                      />
-                      {/* <button
+                <th className="p-3 text-left bg-gray-100 border border-gray-300">
+                  Amount Due
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {farmers
+                .filter(
+                  (farmer) =>
+                    farmer.name
+                      .toLocaleLowerCase()
+                      .includes(name.toLocaleLowerCase()) ||
+                    farmer.plotNo
+                      .toLocaleLowerCase()
+                      .includes(name.toLocaleLowerCase())
+                )
+                .filter((farmer) => farmer.year === year)
+                .filter((farmer) => farmer.month === month)
+                .map((farmer, i) => {
+                  return (
+                    <tr
+                      className={`${i % 2 === 0 ? "bg-gray-200" : ""}`}
+                      key={farmer.plotNo}
+                    >
+                      <td className="p-3 border border-gray-300">
+                        {(pageNumber - 1) * 10 + (i + 1)}
+                      </td>
+                      <td className="p-3 border border-gray-300 font-bold">
+                        {farmer.name}
+                      </td>
+                      <td className="p-3 border border-gray-300">
+                        {farmer.plotNo}
+                      </td>
+                      <td className="p-3 border border-gray-300">
+                        {farmer.month}
+                      </td>
+                      <td className="p-3 border border-gray-300 font-bold">
+                        {farmer.current} m<sup>3</sup>
+                        <AddReadningComponent
+                          loading={addReading}
+                          name={farmer.name}
+                          month={farmer.month}
+                          currentId={farmer.currentId}
+                          currentValue={farmer.current}
+                          update={updateReading}
+                        />
+                        {/* <button
                         onClick={() => {
                           const value = prompt(
                             `Enter ${farmer.month} reading for ${farmer.name}`
@@ -324,93 +364,97 @@ const Page = () => {
                       >
                         +
                       </button> */}
-                    </td>
-                    <td className="p-3 border border-gray-300">
-                      {farmer.prev} m3
-                    </td>
-                    <td className="p-3 border border-gray-300 ">
-                      {farmer.count} m3
-                    </td>
-                    <td className="p-3 border border-gray-300">
-                      {farmer.extraCount}
-                    </td>
-                    <td className="p-3 border border-gray-300">
-                      {farmer.extraCharge}
-                    </td>
-                    <td className="p-3 border border-gray-300">
-                      {farmer.standingCharge}/=
-                    </td>
-                    <td className="p-3 border border-gray-300 font-bold">
-                      {farmer.monthlyBill.toLocaleString()}/=
-                    </td>
-                    <td className="p-3 border border-gray-300 font-bold">
-                      {farmers
-                        .filter((farm) => farm.farmerId === farmer.farmerId)
-                        .reduce((acc, cur) => acc + cur.monthlyBill, 0)
-                        .toLocaleString()}
-                      /=
-                    </td>
-                    <td className="p-3 border font-bold  flex items-center  gap-2">
-                      {farmer.paid.toLocaleString()}/=
-                      {/* <button  onClick={()=>alert(farmer.farmerId)} className="ml-4 border rounded px-1">+</button> */}
-                      {/* <DrawerComponent
+                      </td>
+                      <td className="p-3 border border-gray-300">
+                        {farmer.prev} m<sup>3</sup>
+                      </td>
+                      <td className="p-3 border border-gray-300 ">
+                        {farmer.count} m<sup>3</sup>
+                      </td>
+                      <td className="p-3 border border-gray-300">
+                        {farmer.extraCount}
+                      </td>
+                      <td className="p-3 border border-gray-300">
+                        {farmer.extraCharge}
+                      </td>
+                      <td className="p-3 border border-gray-300">
+                        {farmer.standingCharge}/=
+                      </td>
+                      <td className="p-3 border border-gray-300 font-bold">
+                        {farmer.monthlyBill.toLocaleString()}/=
+                      </td>
+                      <td className="p-3 border border-gray-300 font-bold">
+                        {farmers
+                          .filter((farm) => farm.farmerId === farmer.farmerId)
+                          .reduce((acc, cur) => acc + cur.monthlyBill, 0)
+                          .toLocaleString()}
+                        /=
+                      </td>
+                      <td className="p-3 border font-bold  flex items-center  gap-2">
+                        {farmer.paid.toLocaleString()}/=
+                        {/* <button  onClick={()=>alert(farmer.farmerId)} className="ml-4 border rounded px-1">+</button> */}
+                        {/* <DrawerComponent
                         id={farmer.farmerId}
                         name={farmer.name}
                       /> */}
-                      <PaymentComponent
-                        id={farmer.farmerId}
-                        name={farmer.name}
-                        payments={farmer.payments}
-                      />
-                    </td>
+                        <PaymentComponent
+                          id={farmer.farmerId}
+                          name={farmer.name}
+                          payments={farmer.payments}
+                        />
+                      </td>
 
-                    <td className="p-3 border border-gray-300 font-bold">
-                      {
-                        calculatesSomething(farmers, farmer)
+                      <td className="p-3 border border-gray-300 font-bold">
+                        {
+                          calculatesSomething(farmers, farmer)
 
-                        // (
-                        //   farmers
-                        //     .filter((farm) => farm.farmerId === farmer.farmerId)
-                        //     .reduce((acc, cur) => acc + cur.monthlyBill, 0) -
-                        //   farmer.paid
-                        // ).toLocaleString()
-                      }
-                      /=
-                    </td>
-                  </tr>
-                );
-              })}
-            <tr className="sticky bottom-0 bg-gray-400 text-black font-bold text-lg">
-              {!name && <td className="p-3 border border-gray-300">Total</td>}
-              <td className="p-3 border border-gray-300"></td>
-              <td className="p-3 border border-gray-300"></td>
-              <td className="p-3 border border-gray-300"></td>
-              <td className="p-3 border border-gray-300"></td>
-              <td className="p-3 border border-gray-300"></td>
-              <td className="p-3 border border-gray-300"></td>
-              <td className="p-3 border border-gray-300"></td>
-              <td className="p-3 border border-gray-300"></td>
-              <td className="p-3 border border-gray-300"></td>
-              {!name && (
-                <td className="p-3 border border-gray-300 font-bold">
-                  {farmers
-                    .filter(
-                      (farmer) => farmer.month === month && farmer.year === year
-                    )
-                    .reduce((acc, curr) => acc + curr.monthlyBill, 0)
+                          // (
+                          //   farmers
+                          //     .filter((farm) => farm.farmerId === farmer.farmerId)
+                          //     .reduce((acc, cur) => acc + cur.monthlyBill, 0) -
+                          //   farmer.paid
+                          // ).toLocaleString()
+                        }
+                        /=
+                      </td>
+                    </tr>
+                  );
+                })}
+              <tr className="sticky bottom-0 bg-gray-400 text-black font-bold text-lg">
+                {!name && <td className="p-3 border border-gray-300">Total</td>}
+                <td className="p-3 border border-gray-300"></td>
+                <td className="p-3 border border-gray-300"></td>
+                <td className="p-3 border border-gray-300"></td>
+                <td className="p-3 border border-gray-300"></td>
+                <td className="p-3 border border-gray-300"></td>
+                <td className="p-3 border border-gray-300"></td>
+                <td className="p-3 border border-gray-300"></td>
+                <td className="p-3 border border-gray-300"></td>
+                <td className="p-3 border border-gray-300"></td>
+                {!name && (
+                  <td className="p-3 border border-gray-300 font-bold">
+                    {farmers
+                      .filter(
+                        (farmer) =>
+                          farmer.month === month && farmer.year === year
+                      )
+                      .reduce((acc, curr) => acc + curr.monthlyBill, 0)
+                      .toLocaleString()}
+                    /=
+                  </td>
+                )}
+                <td className="p-3 border border-gray-300"></td>
+                <td className="p-3 border border-gray-300"></td>
+                <td className="p-3 border border-gray-300">
+                  {amundue
+                    .reduce((acc, curr) => acc + curr, 0)
                     .toLocaleString()}
                   /=
                 </td>
-              )}
-              <td className="p-3 border border-gray-300"></td>
-              <td className="p-3 border border-gray-300"></td>
-              <td className="p-3 border border-gray-300">
-                {amundue.reduce((acc, curr) => acc + curr, 0).toLocaleString()}
-                /=
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              </tr>
+            </tbody>
+          </table>
+        )}
 
         <div className="px-6 py-2 border flex gap-2">
           {Array.from(new Array(15)).map((no, i) => {

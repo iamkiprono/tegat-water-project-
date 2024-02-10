@@ -11,6 +11,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { ReloadIcon } from "@radix-ui/react-icons";
+
 
 export function AddReadningComponent({
   name,
@@ -18,14 +20,18 @@ export function AddReadningComponent({
   update,
   currentValue,
   currentId,
+  loading,
 }: {
   name: string;
   month: string;
   update: (id: number, value: number) => void;
   currentValue: number;
   currentId: number;
+  loading: boolean;
 }) {
   const [value, setValue] = useState(currentValue);
+
+  
 
   return (
     <Dialog>
@@ -47,7 +53,7 @@ export function AddReadningComponent({
             <Label htmlFor="name" className="text-right">
               Name
             </Label>
-         {name}
+            <p>{name}</p>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="username" className="text-right">
@@ -63,7 +69,10 @@ export function AddReadningComponent({
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={() => update(currentId, value)} type="submit">Save changes</Button>
+          <Button onClick={() => update(currentId, value)} type="submit">
+            {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
+            {!loading && "Save changes"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

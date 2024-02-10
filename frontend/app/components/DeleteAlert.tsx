@@ -11,7 +11,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
-const DeleteAlert = () => {
+const DeleteAlert = ({
+  deletePay,
+  id,
+}: {
+  deletePay: (id: number) => Promise<void>;
+  id: number;
+}) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger>
@@ -28,14 +34,14 @@ const DeleteAlert = () => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => alert("No")}>
+          <AlertDialogCancel>
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
             className="bg-red-500"
-            onClick={() => alert("Yes")}
+            onClick={() => deletePay(id)}
           >
-            Yes{" "}
+            Yes
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

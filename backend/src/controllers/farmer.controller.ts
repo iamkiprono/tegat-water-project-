@@ -103,13 +103,12 @@ export const getFarmers = async (req: Request, res: Response) => {
 };
 
 export const getFarmersBills = async (req: Request, res: Response) => {
-
-  const {page}=req.query
-  console.log(typeof page)
+  const { page } = req.query;
+  console.log(typeof page);
 
   try {
     // @ts-ignore
-    const pageNumber = parseInt(page)
+    const pageNumber = parseInt(page);
     const itemsPerPage = 10;
     const totalItems = await prisma.farmer.count();
     const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -137,7 +136,7 @@ export const getFarmersBills = async (req: Request, res: Response) => {
       },
     });
 
-    const hasNext = pageNumber < totalPages;
+    const hasNext = pageNumber < totalPages; 
 
     // return res.json({
     //   items: farmer,
@@ -287,7 +286,9 @@ export const getFarmersBills = async (req: Request, res: Response) => {
 
                   farmer.payment,
                   monthsWithCharges2023[i - 1].month,
-                  farmer?.prev_balance[0]?.amount ? farmer.prev_balance[0].amount : 0
+                  farmer?.prev_balance[0]?.amount
+                    ? farmer.prev_balance[0].amount
+                    : 0
                 );
               }
               return calculate(
