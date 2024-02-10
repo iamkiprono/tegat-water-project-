@@ -103,9 +103,8 @@ export const getFarmers = async (req: Request, res: Response) => {
 };
 
 export const getFarmersBills = async (req: Request, res: Response) => {
-  const { page } = req.query;
-  console.log(typeof page);
-
+  const { page, type } = req.query;
+  
   try {
     // @ts-ignore
     const pageNumber = parseInt(page);
@@ -117,8 +116,10 @@ export const getFarmersBills = async (req: Request, res: Response) => {
     const skip = (pageNumber - 1) * itemsPerPage;
 
     const take = itemsPerPage;
-
-    const farmer = await prisma.farmer.findMany({
+    // get all farmers
+    const allFarmers = await prisma.farmer.findMany();
+    const farmer = await prisma.farmer.findMany(type !== "INVOICE"?{
+      // @ts-ignore
       skip,
       take,
       include: {
@@ -134,9 +135,26 @@ export const getFarmersBills = async (req: Request, res: Response) => {
         payment: true,
         prev_balance: true,
       },
+    }:{
+
+      include: {
+        reading: {
+          orderBy: [
+            {
+              year: "asc",
+            },
+            { month: "asc" },
+          ],
+        },
+
+        payment: true,
+        prev_balance: true,
+      },
+
+
     });
 
-    const hasNext = pageNumber < totalPages; 
+    const hasNext = pageNumber < totalPages;
 
     // return res.json({
     //   items: farmer,

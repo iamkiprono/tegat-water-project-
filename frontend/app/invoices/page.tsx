@@ -3,15 +3,20 @@
 import React, { useEffect, useState } from "react";
 import { farmerType } from "../types";
 
+import { useSearchParams } from "next/navigation";
+
 const Invoices = () => {
   const url = process.env.NEXT_PUBLIC_URL;
+
+  const searchParams = useSearchParams();
+
+  const year = searchParams.get("year");
+  const month = searchParams.get("month");
 
   const [farmers, setFarmers] = useState<(typeof farmerType)[]>([]);
 
   const [loading, setLoading] = useState(false);
 
-  const [month, setMonth] = useState("January");
-  const [year, setYear] = useState(2024);
   const [name, setName] = useState("");
 
   const [pageNumber, setPageNumber] = useState(3);
@@ -20,7 +25,9 @@ const Invoices = () => {
     try {
       setLoading(true);
       // const res = await fetch("https://milimani-api.onrender.com/farmers/bills");
-      const res = await fetch(`${url}/farmers/bills?page=${pageNumber}`);
+      const res = await fetch(
+        `${url}/farmers/bills?page=${pageNumber}&month=${month}&year=${year}&type=INVOICE`
+      );
       const data = await res.json();
       if (!res.ok) {
         throw Error(data.error);
@@ -48,7 +55,8 @@ const Invoices = () => {
               .includes(name.toLocaleLowerCase()) ||
             farmer.plotNo.toLocaleLowerCase().includes(name.toLocaleLowerCase())
         )
-        .filter((farmer) => farmer.year === year)
+        // @ts-ignore
+        .filter((farmer) => farmer.year === parseInt(year))
         .filter((farmer) => farmer.month === month)
         .map((farmer, i) => {
           return (
@@ -70,12 +78,12 @@ const Invoices = () => {
                 </p>
 
                 <p className="">
-                  Account Name:
+                  Account Name:{" "}
                   <span className="font-bold my-2">{farmer.name}</span>
                   {/* <span className="font-bold my-2">${card.names_}</span> */}
                 </p>
                 <p className="">
-                  Date:
+                  Date:{" "}
                   <span className="font-bold my-2">
                     {new Date().toDateString()}
                   </span>
@@ -83,14 +91,14 @@ const Invoices = () => {
                 <div className="flex gap-20 mt-4">
                   <div>
                     <p className="">
-                      Current Reading:
+                      Current Reading:{" "}
                       <span className="font-bold my-2">
                         {farmer.current} m<sup>3</sup>
                         {/* ${card.current_reading} m<sup>3</sup> */}
                       </span>
                     </p>
                     <p className="">
-                      Previous Reading:
+                      Previous Reading:{" "}
                       <span className="font-bold my-2">
                         {farmer.prev} m<sup>3</sup>
                         {/* ${card.previous_reading} m<sup>3</sup> */}
@@ -99,14 +107,14 @@ const Invoices = () => {
                   </div>
                   <div>
                     <p className="">
-                      Consumed Units:
+                      Consumed Units:{" "}
                       <span className="font-bold my-2">
                         {farmer.count} m<sup>3</sup>
                         {/* ${card.count_} m<sup>3</sup> */}
                       </span>
                     </p>
                     <p className="">
-                      Consumption Month:
+                      Consumption Month:{" "}
                       <span className="font-bold my-2">
                         {farmer.month}{" "}
                         {/* ${card.month ? card.month : "January"} */}
@@ -115,7 +123,7 @@ const Invoices = () => {
                   </div>
                   <div>
                     <p className="">
-                      Monthly Bill:
+                      Monthly Bill:{" "}
                       <span className="font-bold my-2">
                         {farmer.monthlyBill}/=
                       </span>
@@ -123,7 +131,7 @@ const Invoices = () => {
                     </p>
 
                     <p className="">
-                      Previous Balance:
+                      Previous Balance:{" "}
                       <span className="font-bold my-2">
                         {farmers
                           .filter((farm) => farm.farmerId === farmer.farmerId)
@@ -137,7 +145,7 @@ const Invoices = () => {
                   </div>
 
                   <p className="text-xl border p-2 w-fit">
-                    Total Amount Due:
+                    Total Amount Due:{" "}
                     <span className="font-bold my-2">
                       {(
                         farmers
@@ -155,7 +163,7 @@ const Invoices = () => {
                 <p className="font-bold">NOTE</p>
                 <ol>
                   <li>
-                    1. All payments to be made through
+                    1. All payments to be made through{" "}
                     <span className="font-bold">
                       BANK AGENT: Co-op Account No 01134721103900
                     </span>
