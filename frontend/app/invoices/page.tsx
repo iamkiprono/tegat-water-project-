@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { farmerType } from "../bills/page";
+import { farmerType } from "../types";
 
 const Invoices = () => {
   const url = process.env.NEXT_PUBLIC_URL;

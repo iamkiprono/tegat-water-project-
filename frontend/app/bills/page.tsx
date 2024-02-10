@@ -11,34 +11,9 @@ import { AddReadningComponent } from "../components/AddReadingConponent";
 import { InvoiceDialog } from "../components/InvoiceDialog";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useToast } from "@/components/ui/use-toast";
+import { farmerType } from "../types";
 
-export const farmerType = {
-  name: "Justine Langat",
-  farmerId: 1,
-  plotNo: "24",
-  currentId: 0,
-  month: "February",
-  current: 35,
-  year: 2023,
-  prev: 23,
-  count: 12,
-  extraCount: 2,
-  extraCharge: 100,
-  standingCharge: 400,
-  monthlyBill: 500,
-  paid: 0,
-  amountDue: 500,
-  payments: [
-    {
-      id: 4,
-      transactionId: "",
-      amount: 500,
-      date: new Date(),
-      paymentType: "MPESA",
-      farmerId: 1,
-    },
-  ],
-};
+ 
 
 const Page = () => {
   const router = useRouter();
