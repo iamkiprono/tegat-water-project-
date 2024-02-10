@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { farmerType } from "../types";
 
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 const Invoices = () => {
   const url = process.env.NEXT_PUBLIC_URL;
@@ -47,6 +48,11 @@ const Invoices = () => {
 
   return (
     <div className="max-w-7xl m-auto  p-6">
+      <div className="absolute left-0 top-0">
+        <Link className="border rounded" href={"bills"}>
+          Go back
+        </Link>
+      </div>
       {farmers
         .filter(
           (farmer) =>
@@ -116,7 +122,7 @@ const Invoices = () => {
                     <p className="">
                       Consumption Month:{" "}
                       <span className="font-bold my-2">
-                        {farmer.month}{" "}
+                        {farmer.month} {year}
                         {/* ${card.month ? card.month : "January"} */}
                       </span>
                     </p>
