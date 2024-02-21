@@ -106,17 +106,35 @@ const getFarmers = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.getFarmers = getFarmers;
 const getFarmersBills = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { page, type } = req.query;
     try {
-        const pageNumber = 15;
+        // @ts-ignore
+        const pageNumber = parseInt(page);
         const itemsPerPage = 10;
         const totalItems = yield PrismaClient_1.prisma.farmer.count();
         const totalPages = Math.ceil(totalItems / itemsPerPage);
         // skip
         const skip = (pageNumber - 1) * itemsPerPage;
         const take = itemsPerPage;
-        const farmer = yield PrismaClient_1.prisma.farmer.findMany({
+        // get all farmers
+        const allFarmers = yield PrismaClient_1.prisma.farmer.findMany();
+        const farmer = yield PrismaClient_1.prisma.farmer.findMany(type !== "INVOICE" ? {
+            // @ts-ignore
             skip,
             take,
+            include: {
+                reading: {
+                    orderBy: [
+                        {
+                            year: "asc",
+                        },
+                        { month: "asc" },
+                    ],
+                },
+                payment: true,
+                prev_balance: true,
+            },
+        } : {
             include: {
                 reading: {
                     orderBy: [
@@ -259,7 +277,9 @@ const getFarmersBills = (req, res) => __awaiter(void 0, void 0, void 0, function
                     .map((farmer) => {
                     var _a;
                     if (i < 2) {
-                        return (0, Calculation_1.calculateBlank)(farmer.name, farmer.id, farmer.plotNo ? farmer.plotNo : "", farmer.reading[i + -1].value, farmer.reading[i + -1].id, i - 2 < 0 ? 0 : farmer.reading[i + -2].value, 2023, monthsWithCharges2023[i - 1].standingCharge, farmer.payment, monthsWithCharges2023[i - 1].month, ((_a = farmer === null || farmer === void 0 ? void 0 : farmer.prev_balance[0]) === null || _a === void 0 ? void 0 : _a.amount) ? farmer.prev_balance[0].amount : 0);
+                        return (0, Calculation_1.calculateBlank)(farmer.name, farmer.id, farmer.plotNo ? farmer.plotNo : "", farmer.reading[i + -1].value, farmer.reading[i + -1].id, i - 2 < 0 ? 0 : farmer.reading[i + -2].value, 2023, monthsWithCharges2023[i - 1].standingCharge, farmer.payment, monthsWithCharges2023[i - 1].month, ((_a = farmer === null || farmer === void 0 ? void 0 : farmer.prev_balance[0]) === null || _a === void 0 ? void 0 : _a.amount)
+                            ? farmer.prev_balance[0].amount
+                            : 0);
                     }
                     return (0, Calculation_1.calculate)(farmer.name, farmer.id, farmer.plotNo ? farmer.plotNo : "", farmer.reading[i + -1].value, farmer.reading[i + -1].id, i - 2 < 0 ? 0 : farmer.reading[i + -2].value, 2023, monthsWithCharges2023[i - 1].standingCharge, farmer.payment, monthsWithCharges2023[i - 1].month);
                 }));
