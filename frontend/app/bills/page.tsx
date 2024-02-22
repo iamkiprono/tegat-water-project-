@@ -1,16 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import DrawerComponent from "../components/DrawerComponent";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
+import { useToast } from "@/components/ui/use-toast";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import PaymentComponent from "../components/PaymentComponent";
 import { AddReadningComponent } from "../components/AddReadingConponent";
 import { InvoiceDialog } from "../components/InvoiceDialog";
-import { ReloadIcon } from "@radix-ui/react-icons";
-import { useToast } from "@/components/ui/use-toast";
+import PaymentComponent from "../components/PaymentComponent";
 import { farmerType } from "../types";
 
  

@@ -104,6 +104,8 @@ export const getFarmers = async (req: Request, res: Response) => {
 
 export const getFarmersBills = async (req: Request, res: Response) => {
   const { page, type } = req.query;
+
+  console.log({page, type})
   
   try {
     // @ts-ignore

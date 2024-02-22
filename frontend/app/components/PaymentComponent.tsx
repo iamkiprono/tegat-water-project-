@@ -117,7 +117,10 @@ const PaymentComponent = ({
         </DrawerTrigger>
         <DrawerContent>
           <div className="p-4 h-[400px] overflow-scroll">
-            <p className="font-bold text-xl my-4">{name}</p>
+            <div className="flex justify-between items-center">
+              <p className="font-bold text-xl my-4">{name}</p>
+              <Button>View Statement</Button>
+            </div>
             <div className="overflow-x-auto">
               <table className="min-w-full border-collapse border border-gray-300">
                 <thead className="bg-gray-200">
