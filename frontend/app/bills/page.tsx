@@ -10,6 +10,7 @@ import { AddReadningComponent } from "../components/AddReadingConponent";
 import { InvoiceDialog } from "../components/InvoiceDialog";
 import PaymentComponent from "../components/PaymentComponent";
 import { farmerType } from "../types";
+import NextTable from "../components/Table";
 
  
 
@@ -129,6 +130,7 @@ const Page = () => {
 
   return (
     <div className="w-full">
+      <NextTable/>
       <div className="flex justify-around items-center   w-full ">
         <div>
           <select
