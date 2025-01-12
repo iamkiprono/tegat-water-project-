@@ -37,7 +37,7 @@ const Page = () => {
     try {
       setLoading(true);
       // const res = await fetch("https://milimani-api.onrender.com/farmers/bills");
-      const res = await fetch(`${url}/farmers/bills?page=${pageNumber}`);
+      const res = await fetch(`${url}/farmers/bills?page=${pageNumber}&limit=10`);
       const data = await res.json();
       if (!res.ok) {
         throw Error(data.error);
